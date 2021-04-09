@@ -23,7 +23,7 @@ const authReducer = (state, action) => {
     }
 }
 
-const googleSignin = (dispatch) => async (callback) => {
+const googleSignin = (dispatch) => async () => {
     try {
         //1 - init Google Auth Provider
         const provider = new firebase.auth.GoogleAuthProvider();
@@ -34,7 +34,6 @@ const googleSignin = (dispatch) => async (callback) => {
                 const res = await saasApi.post('/auth/firebase-login', { user }) // login user and fetch logged in user from db
                 const dbUser = res.data // db user will have photoURL, (username)name etc.
                 dispatch({ type: "signin", payload: { authenticated: true, email: user.email, photoURL: dbUser.photoURL, emailVerified: user.emailVerified, providerId: dbUser.providerId } })
-                callback() // push route
             }
         );
     } catch (error) {
@@ -42,29 +41,24 @@ const googleSignin = (dispatch) => async (callback) => {
     }
 }
 
-const emailSignin = (dispatch) => async (email, password, callback) => {
+const emailSignin = (dispatch) => async (email, password) => {
     try {
         const { user } = await auth.signInWithEmailAndPassword(email, password) //oAuthUser
         const res = await saasApi.post('/auth/firebase-login', { user }) // login user and fetch logged in user from db
         const dbUser = res.data // db user will have photoURL, (username)name etc.
         dispatch({ type: "signin", payload: { authenticated: true, email: user.email, photoURL: dbUser.photoURL, emailVerified: user.emailVerified, providerId: dbUser.providerId } })
-        console.log("DISPATCHED")
-        callback()
     } catch (error) {
         dispatch({ type: "error", payload: error.message })
     }
 }
 
-const emailSignup = (dispatch) => async (email, password, callback) => {
+const emailSignup = (dispatch) => async (email, password) => {
     try {
         const { user } = await auth.createUserWithEmailAndPassword(email, password)
         user.sendEmailVerification() // send email verification to user
-        console.log("USER", user)
         const res = await saasApi.post('/auth/firebase-login', { user }) // login user and fetch logged in user from db
         const dbUser = res.data // db user will have photoURL, (username)name etc.
         dispatch({ type: "signin", payload: { authenticated: true, email: user.email, photoURL: dbUser.photoURL, emailVerified: user.emailVerified, providerId: dbUser.providerId } })
-        callback()
-
     } catch (error) {
         dispatch({ type: "error", payload: error.message })
     }
@@ -85,10 +79,13 @@ const updatePassword = dispatch => async (currentpassword, newpassword, callback
         const user = auth.currentUser
         const credentials = firebase.auth.EmailAuthProvider.credential(user.email, currentpassword)
         await user.reauthenticateWithCredential(credentials)
-        await user.updatePassword(newpassword)
+        const updatedPw = await user.updatePassword(newpassword)
+        console.log(updatedPw)
         dispatch({ type: "update_password" })
         callback()
     } catch (error) {
+        console.log("ERR")
+        console.log(error)
         dispatch({ type: "error", payload: error.message })
     }
 }
@@ -151,15 +148,17 @@ const clearState = dispatch => () => {
     dispatch({ type: "clear_state" })
 }
 
-const checkIfAuthenticated = dispatch => async () => {
+const checkIfAuthenticated = dispatch => async (callback) => {
     auth.onAuthStateChanged(async (user) => {
         // if user is logged in fetch user from db
         if (user) {
             const res = await saasApi.get('/user') // fetch logged in user from db
             const dbUser = res.data
             dispatch({ type: "signin", payload: { authenticated: true, email: user.email, photoURL: dbUser.photoURL, emailVerified: user.emailVerified, providerId: dbUser.providerId } })
+            callback()
         } else {
             dispatch({ type: "signout" });
+            callback()
         }
     });
 }

@@ -2,20 +2,20 @@ import React, { useContext } from "react";
 import { Context as AuthContext } from '../context/AuthContext'
 import { Text, StyleSheet, View, SafeAreaView } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import { FontAwesome, AntDesign, Ionicons  } from '@expo/vector-icons';
+import { AntDesign, Ionicons } from '@expo/vector-icons';
 
-const SettingsScreen = ({ navigation }) => {
+const Settings = ({ navigation }) => {
     const { signout } = useContext(AuthContext)
 
     return (
         <SafeAreaView style={styles.container}>
-            <TouchableOpacity onPress={() => navigation.navigate("EditBio")}>
+            <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
                 <View style={styles.card}>
                     <Text style={styles.text}>Edit Profile</Text>
-                    <FontAwesome name="angle-right" size={24} color="black" />
+                    <AntDesign name="user" size={24} color="black" />
                 </View>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate("Agb")}>
+            <TouchableOpacity onPress={() => navigation.navigate("PrivacyPolicy")}>
                 <View style={styles.card}>
                     <Text style={styles.text}>Privacy Policy & Terms of Service</Text>
                     <Ionicons name="newspaper-outline" size={24} color="black" />
@@ -50,4 +50,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default SettingsScreen;
+export default Settings;

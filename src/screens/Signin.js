@@ -1,18 +1,13 @@
 import React, { useState, useCallback, useContext } from "react";
 import { Layout, Input, Text, Icon, Button } from '@ui-kitten/components';
-import { Context as AuthContext } from '../../context/AuthContext'
+import { Context as AuthContext } from '../context/AuthContext'
 import { StyleSheet, TouchableOpacity, TouchableWithoutFeedback } from "react-native";
-import { LoadingIndicator } from "../../components/LoadingIndicator";
+import Loading from "../components/Loading";
 import { useFocusEffect } from '@react-navigation/native';
 
 
-const AlertIcon = (props) => (
-  <Icon {...props} name='alert-circle-outline' />
-);
-
-
 // form for signin and signup
-const SignupScreen = ({ navigation }) => {
+const Sigin = ({ navigation }) => {
   const { state: { errorMessage }, emailSignin, clearState } = useContext(AuthContext)
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -38,7 +33,7 @@ const SignupScreen = ({ navigation }) => {
 
   return (
     <Layout style={styles.container}>
-      <Text category='h2' style={styles.title}>Register now</Text>
+      <Text category='h2' style={styles.title}>Welcome back</Text>
       <Input
         style={styles.input}
         autoCapitalize="none"
@@ -56,9 +51,7 @@ const SignupScreen = ({ navigation }) => {
         secureTextEntry={secureTextEntry}
         label='Password'
         placeholder="Your Password"
-        caption='Should contain at least 6 symbols'
         accessoryRight={renderIcon}
-        captionIcon={AlertIcon}
       />
 
       {errorMessage ? <Text style={styles.errorMessage} status='warning'>{errorMessage}</Text> : null}
@@ -67,18 +60,20 @@ const SignupScreen = ({ navigation }) => {
         style={styles.button}
         onPress={() => {
           setIsLoading(true)
-          emailSignin(email, password, () => {
-            setIsLoading(false)
-          })
+          emailSignin(email, password)
         }}
-        disabled={!email || !password}
-        accessoryLeft={isLoading ? LoadingIndicator : null}
+        disabled={isLoading && !errorMessage ? true : !email || !password}
+        accessoryLeft={isLoading && !errorMessage ? Loading : null}
       >
-        {isLoading ? "Loading" : "Create Account"}
+        {isLoading && !errorMessage ? "Loading..." : "Login"}
       </Button>
 
-      <TouchableOpacity onPress={() => navigation.navigate("Signin")}>
-        <Text style={styles.routertext} status='info'>You already have an accoount? Login</Text>
+      <TouchableOpacity onPress={() => navigation.navigate("Signup")}>
+        <Text style={styles.routertext} status='info'>You don't have an accoount? Sign Up</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => navigation.navigate("ForgotPassword")}>
+        <Text style={styles.routertext} status='info'>Forgot password?</Text>
       </TouchableOpacity>
     </Layout>
   )
@@ -112,4 +107,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default SignupScreen;
+export default Sigin;

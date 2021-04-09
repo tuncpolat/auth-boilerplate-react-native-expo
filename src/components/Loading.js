@@ -1,9 +1,8 @@
 import React from "react";
 import { Spinner } from '@ui-kitten/components';
-import { StyleSheet } from "react-native";
+import { StyleSheet, View } from "react-native";
 
-
-export default LoadingIndicator = (props) => (
+export default Loading = (props) => (
     <View style={[props.style, styles.indicator]}>
         <Spinner size='small' />
     </View>

@@ -2,7 +2,7 @@ import React from "react";
 import { Layout, Text } from '@ui-kitten/components';
 import { StyleSheet } from "react-native";
 
-const HomeScreen = () => {
+const Home = () => {
   return (
     <Layout style={styles.container}>
       <Text category='h1'>HOME</Text>
@@ -16,4 +16,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HomeScreen;
+export default Home;
